@@ -1,9 +1,9 @@
 <!-- Program -->
 <script src="./tauprolog.js"></script>
-<script type="text/prolog" id="doge.pl">
+<script type="text/prolog" id="Mario.pl">
     :- use_module(library(dom)).
     
-    % Define paredes locations (you can specify positions as needed)
+    % Definimos paredes en el juego
     paredes(0, 50).
     paredes(50, 50).
     paredes(100, 50).
@@ -49,69 +49,68 @@
 
 
 
-    % Check if the position (X, Y) collides with any wall
+    % mira si hay colision con alguna pared
     colision_paredes(X, Y) :-
         paredes(ParedesX, ParedesY),
-        X >= ParedesX, X =< ParedesX + 40,  % Adjust the size of the wall
-        Y >= ParedesY, Y =< ParedesY + 40.  % Adjust the size of the wall
+        X >= ParedesX, X =< ParedesX + 40,  % ajusta el movimiento en x
+        Y >= ParedesY, Y =< ParedesY + 40.  % ajusta el movimienton en y 
 
-    % Check if the Doge is in the same position as any star
+    % ajusta si mario topa con la estrella
     colision_estrella(X, Y,Estrella) :-
     
-        style(Estrella, top, px(StarY)),  % Get the current Y position of the star
-        style(Estrella, left, px(StarX)),  % Get the current X position of the star
-        X >= StarX, X =< StarX + 40,  % Adjust size of the star
-        Y >= StarY, Y =< StarY + 40.  % Adjust size of the star
+        style(Estrella, top, px(EstrellaY)),  % Obtiene la posicion de la estrella en Y
+        style(Estrella, left, px(EstrellaX)),  % Obtiene la posicion de la estrella en X
+        X >= EstrellaX, X =< EstrellaX + 40,  % 
+        Y >= EstrellaY, Y =< EstrellaY + 40.  % r
 
-    % Move the Doge and check for collisions with any star
-    % Move the Doge character
-    move(Doge, Axis, Incr,Estrella) :-
-        get_by_id(board, Board),  % Get the board element
-        style(Doge, Axis, px(X0)),  % Get the current position of Doge
+    % Movimiento de mario
+    movimiento_mario(Mario, Axis, Incr,Estrella) :-
+        
+        style(Mario, Axis, px(X0)),  % Posicion Inicial de mario
         X1 is X0 + Incr,
-        style(Doge, top, px(Y)),  % Get the current vertical position
-        style(Doge, left, px(X)), % Get the current horizontal position
-        (Axis = top -> (\+ colision_paredes(X, X1)) ; (\+ colision_paredes(X1, Y))),  % Check for wall collisions
+        style(Mario, top, px(Y)),  % Obtener posicion de y de mario
+        style(Mario, left, px(X)), %  Obtener posicion de x de mari
+        (Axis = top -> (\+ colision_paredes(X, X1)) ; (\+ colision_paredes(X1, Y))),  % verifica si hay colision en paredes de mario
 
         (Axis = top ->
         (colision_estrella(X, X1, Estrella) ->
             mover_estrella(Axis, Incr, Estrella)
-        ;   true)
-    ; 
+        ;   true)   %verifica si hay colision en la estrella si el momiviento es top y si devuelve true se va a mover a la estrella
+    ;                       %es un if else, si no complue con el primer if se va a mover a la siguiente condicion
         (colision_estrella(X1, Y, Estrella) ->
             mover_estrella(Axis, Incr, Estrella)
         ;   true)
     ),
-        style(Doge, Axis, px(X1)).  % Move the Doge
+        style(Mario, Axis, px(X1)).  % Se mueve el mario 
     
-    % Move the star if it collides
+    % Movimiento en estrellas
     mover_estrella(Axis, Incr,Estrella) :-
-        style(Estrella, Axis, px(L1)),
+        style(Estrella, Axis, px(L1)), %obtenemos la posicion de la estrella
         Z1 is L1 + Incr,
 
-        style(Estrella, top, px(Y)),  % Get the current vertical position
-        style(Estrella, left, px(X)), % Get the current horizontal position
-        (Axis = top -> (\+ colision_paredes(X, Z1)) ; (\+ colision_paredes(Z1, Y))),  % Check for wall collisions
+        style(Estrella, top, px(Y)),  % Posicion inicial en Y
+        style(Estrella, left, px(X)), % Posicion inicial en X
+        (Axis = top -> (\+ colision_paredes(X, Z1)) ; (\+ colision_paredes(Z1, Y))),  % Verifica si hay una estrella que va topar con alguna pared si es asi no sigue
        
-        % Check if the star collides with the castle
+        % Validacion para ver si ya topo en castillo
         castillo(CastilloX, CastilloY),
         (X >= CastilloX, X =< CastilloX + 40,
          Y >= CastilloY, Y =< CastilloY + 40 ->
-            % If the star reaches the castle, update the H1 text or position
+            % si se cumple el if mandamos un mensaje de que ya termino el juego
             get_by_id(debug,Debug),
             set_html(Debug,'Juego Terminado, Felicidades'),
             style(Estrella, Axis, px(Z1))
         ;
-            % If no collision, move the star
+            % si no hubo colision, solo movimiento 
             style(Estrella, Axis, px(Z1))
         ).
 
     % anim/2
-    % Change animation of the doge
-    anim(Doge, Dir) :-
+    % Cambia la animacion de mario 
+    anim(Mario, Dir) :-
         atom_concat('/img', Dir, Src1),
         atom_concat(Src1, '.png', Src),
-        style(Doge, backgroundImage, url(Src)).
+        style(Mario, backgroundImage, url(Src)).
     
     % clear_control/0
     % Remove the focus class of any control
@@ -127,38 +126,38 @@
         add_class(Control, focus).
     
         % Acción para moverse hacia arriba
-        action(Doge, w,Estrella) :-
-            anim(Doge, up),
-            move(Doge, top, -50,Estrella).  % Llama a move que manejará el movimiento y colisiones
+        action(Mario, w,Estrella) :-
+            anim(Mario, up),
+            movimiento_mario(Mario, top, -50,Estrella).  % Llama a movimiento_mario que manejará el movimiento y colisiones
         
         % Acción para moverse hacia abajo
-        action(Doge, s,Estrella) :-
-            anim(Doge, down),
-            move(Doge, top, 50,Estrella).
+        action(Mario, s,Estrella) :-
+            anim(Mario, down),
+            movimiento_mario(Mario, top, 50,Estrella).
         
         % Acción para moverse a la izquierda
-        action(Doge, a,Estrella) :-
-            anim(Doge, left),
-            move(Doge, left, -50,Estrella).
+        action(Mario, a,Estrella) :-
+            anim(Mario, left),
+            movimiento_mario(Mario, left, -50,Estrella).
         
         % Acción para moverse a la derecha
-        action(Doge, d,Estrella) :-
-            anim(Doge, right),
-            move(Doge, left, 50,Estrella).
+        action(Mario, d,Estrella) :-
+            anim(Mario, right),
+            movimiento_mario(Mario, left, 50,Estrella).
         
   
     
     % init/0
     % Initialize the game
     init :-
-        get_by_id(doge, Doge),
+        get_by_id(mario, Mario),
         get_by_tag(body, Body),
         get_by_id(estrella1, Estrella),
         bind(Body, keyup, _, clear_controls),
         bind(Body, keydown, Event, (
             event_property(Event, key, Key),
             remark_control(Key),
-            action(Doge, Key,Estrella),
+            action(Mario, Key,Estrella),
             prevent_default(Event)
         )).
 </script>
@@ -166,7 +165,7 @@
 <!-- Styles -->
 <style type="text/css">
     #board {
-        background: rgb(225, 231, 227) url("/content/examples/resources/my-little-doge/grass.png") center center repeat;
+        background: rgb(225, 231, 227) url("/content/examples/resources/my-little-Mario/grass.png") center center repeat;
         width: 500px;
         height: 550px;
         border: 10px solid #563101;
@@ -175,7 +174,7 @@
         position: relative;
     }
 
-    #doge {
+    #mario {
         background: transparent url("/img/mario.png") center center no-repeat;
         position: absolute;
         top: 100px;
@@ -469,7 +468,7 @@
 
 <!-- Board -->
 <div id="board">
-    <div id="doge"></div>
+    <div id="mario"></div>
     <div id="controls">
         <div class="control" id="control-w">w</div>
         <div class="control" id="control-a">a</div>
@@ -535,7 +534,7 @@
     // Create session
     var session = pl.create(1000);
     // Consult program
-    session.consult("doge.pl");
+    session.consult("Mario.pl");
     // Query goal
     session.query("init.");
     // Find answers

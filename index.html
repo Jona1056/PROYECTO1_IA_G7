@@ -101,7 +101,8 @@
         % Validación para verificar si la estrella ha llegado al castillo
         (colision_castillo(X, Z1) ->  % Verifica la colisión con el castillo
             % Si se cumple el if, se manda un mensaje de que ya terminó el juego
-            get_by_id(debug, Debug)
+            get_by_id(debug, Debug),
+            style(Estrella, Axis, px(Z1))
        
     ; 
         % Si no hubo colisión, solo movimiento 

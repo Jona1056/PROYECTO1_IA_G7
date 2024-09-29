@@ -10,6 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "robotjs": "^0.6.0"
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "robotjs": "^0.6.0",
+    "tau-prolog": "^0.3.4"
   }
 }

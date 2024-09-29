@@ -1,0 +1,396 @@
+:root {
+    --castillo1-top: 200px;
+    --castillo1-left: 50px;
+    --estrella1-top: 100px;
+    --estrella1-left: 250px;
+    --mario-top: 100px;
+    --mario-left: 100px;
+}
+
+
+
+
+    #board {
+        background: rgb(225, 231, 227) center center repeat;
+        width: 500px;
+        height: 550px;
+        border: 10px solid #563101;
+        margin-left: 150px;
+        margin-bottom: 60px;
+        position: relative;
+    }
+
+    #mario {
+        background: transparent url("/img/mario.png") center center no-repeat;
+        position: absolute;
+        top: var(--mario-top);
+        left: var(--mario-left);
+        width: 128px;
+        height: 128px;
+        margin-bottom: -86px;
+        z-index: 90;
+        transform: scale(0.4);
+        /* Scale down to 50% */
+    }
+
+    .poop {
+        background: transparent url("/img/mario.png") center center no-repeat;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        margin-bottom: -20px;
+        z-index: 80;
+        transform: scale(0.7);
+        /* Scale down to 50% */
+    }
+
+    #controls {
+        position: absolute;
+        top: 30px;
+        left: 650px;
+        z-index: 99;
+        
+    }
+
+    .control {
+        background-color: #000000;
+        display: inline-block;
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 20px;
+        font-family: monospace, arial;
+        text-align: center;
+        padding: 5px 0px;
+        border-radius: 3px;
+        box-shadow: 0px 5px 0px #dfdfdf;
+        width: 40px;
+        margin-bottom: 10px;
+        opacity: 0.9;
+    }
+
+    .control.focus {
+        background-color: #eda240;
+        color: #ffffff;
+        box-shadow: 0px 5px 0px #d0831e;
+        opacity: 1;
+    }
+
+    #control-w {
+        display: block;
+        position: relative;
+        left: 45px;
+    }
+
+    #control-p {
+        display: block;
+        width: 130px;
+    }
+
+    .paredes {
+        background: transparent url("/img/bloque2.png") center center no-repeat;
+        position: absolute;
+        top: 157px;
+        left: 357px;
+        width: 128px;
+        height: 128px;
+        margin-bottom: -86px;
+        z-index: 90;
+        transform: scale(0.4);
+        /* Scale down to 50% */
+    }
+
+    .estrellas {
+        background: transparent url("/img/estrella.png") center center no-repeat;
+        position: absolute;
+        top: 157px;
+        left: 357px;
+        width: 128px;
+        height: 128px;
+        margin-bottom: -86px;
+        z-index: 89;
+        transform: scale(0.4);
+        /* Scale down to 50% */
+    }
+
+    .castillo {
+        background: transparent url("/img/castillo.png") center center no-repeat;
+        position: absolute;
+        top: 157px;
+        left: 357px;
+        width: 128px;
+        height: 128px;
+        margin-bottom: -86px;
+        z-index: 89;
+        transform: scale(0.4);
+        /* Scale down to 50% */
+    }
+
+    .bug {
+
+
+        top: 157px;
+        margin-left: -200px;
+        width: 128px;
+        height: 128px;
+        margin-bottom: -86px;
+        z-index: 90;
+
+        /* Scale down to 50% */
+    }
+
+    #Paredes1 {
+        top: 50px;
+        left: 0px;
+    }
+
+    #Paredes2 {
+        top: 100px;
+        left: 0px;
+    }
+
+    #Paredes3 {
+        top: 0px;
+        left: 50px;
+    }
+
+    #Paredes4 {
+        top: 0px;
+        left: 0px;
+    }
+
+    #Paredes5 {
+        top: 0px;
+        left: 100px;
+    }
+
+    #Paredes6 {
+        top: 0px;
+        left: 150px;
+    }
+
+    #Paredes7 {
+        top: 0px;
+        left: 200px;
+    }
+
+    #Paredes8 {
+        top: 0px;
+        left: 250px;
+    }
+
+    #Paredes9 {
+        top: 0px;
+        left: 300px;
+    }
+
+    #Paredes10 {
+        top: 0px;
+        left: 350px;
+    }
+
+    #Paredes12 {
+        top: 50px;
+        left: 50px;
+    }
+
+    #Paredes13 {
+        top: 50px;
+        left: 100px;
+    }
+
+    #Paredes14 {
+        top: 150px;
+        left: 0px;
+    }
+
+    #Paredes15 {
+        top: 200px;
+        left: 0px;
+    }
+
+    #Paredes16 {
+        top: 250px;
+        left: 0px;
+    }
+
+    #Paredes17 {
+        top: 300px;
+        left: 0px;
+    }
+
+    #Paredes18 {
+        top: 350px;
+        left: 0px;
+    }
+
+    #Paredes19 {
+        top: 400px;
+        left: 0px;
+    }
+
+    #Paredes20 {
+        top: 400px;
+        left: 50px;
+    }
+
+    #Paredes21 {
+        top: 400px;
+        left: 100px;
+    }
+
+    #Paredes22 {
+        top: 400px;
+        left: 150px;
+    }
+
+    #Paredes23 {
+        top: 400px;
+        left: 200px;
+    }
+
+    #Paredes24 {
+        top: 400px;
+        left: 250px;
+    }
+
+    #Paredes25 {
+        top: 400px;
+        left: 300px;
+    }
+
+    #Paredes26 {
+        top: 400px;
+        left: 350px;
+    }
+
+    #Paredes27 {
+        top: 400px;
+        left: 400px;
+    }
+
+    #Paredes28 {
+        top: 350px;
+        left: 350px;
+    }
+
+    #Paredes29 {
+        top: 250px;
+        left: 350px;
+    }
+
+    #Paredes30 {
+        top: 300px;
+        left: 350px;
+    }
+
+    #Paredes31 {
+        top: 250px;
+        left: 300px;
+    }
+
+    #Paredes32 {
+        top: 200px;
+        left: 300px;
+    }
+
+    #Paredes33 {
+        top: 150px;
+        left: 300px;
+    }
+
+    #Paredes34 {
+        top: 100px;
+        left: 300px;
+    }
+
+    #Paredes35 {
+        top: 50px;
+        left: 300px;
+    }
+
+    #Paredes36 {
+        top: 150px;
+        left: 100px;
+    }
+
+    #Paredes37 {
+        top: 150px;
+        left: 50px;
+    }
+
+    #Paredes38 {
+        top: 200px;
+        left: 100px;
+    }
+
+    #Paredes39 {
+        top: 250px;
+        left: 100px;
+    }
+
+    #Paredes40 {
+        top: 200px;
+        left: 150px;
+    }
+
+    #estrella1 {
+        top:var(--estrella1-top);
+        left: var(--estrella1-left);
+    }
+
+    #castillo1 {
+        top:var(--castillo1-top);
+        left: var(--castillo1-left);
+    }
+
+    #bug {
+        left: 100px
+    }
+
+    .titulo {
+        text-align: center; /* Centrar el texto */
+        font-family: 'Arial', sans-serif; /* Cambiar la fuente */
+        font-size: 2.5em; /* Aumentar el tamaño de la fuente */
+        color: #FF6347; /* Color bonito (tomate) */
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Sombra de texto para un efecto más atractivo */
+ 
+        margin-bottom: 20px; /* Margen inferior */
+    }
+    
+
+    /* From Uiverse.io by ShrinilDhorda */ 
+.btn {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    padding: 1rem 2.5rem;
+    border: none;
+    outline: none;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    background-color: rgb(14, 14, 26);
+    color: rgb(234, 234, 234);
+    font-weight: 700;
+    transition: 0.6s;
+    box-shadow: 0px 0px 60px #1f4c65;
+    -webkit-box-reflect: below 10px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4));
+  }
+  
+  .btn:active {
+    scale: 0.92;
+  }
+  
+  .btn:hover {
+    background: rgb(2,29,78);
+    background: linear-gradient(270deg, rgba(2, 29, 78, 0.681) 0%, rgba(31, 215, 232, 0.873) 60%);
+    color: rgb(4, 4, 38);
+  }
+
+  body {
+    display: flex; /* Usar flexbox para centrar el contenido */
+    flex-direction: column; /* Colocar elementos en columna */
+    align-items: center; /* Centrar horizontalmente */
+    justify-content: center; /* Centrar verticalmente */
+    height: 100vh; /* Usar toda la altura de la ventana */
+    margin: 0; /* Eliminar margen predeterminado */
+}

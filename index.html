@@ -45,65 +45,68 @@
     paredes(100, 200).
     paredes(100, 250).
     paredes(150, 200).
-    castillo(50,250).
+  
 
-
-
-    % mira si hay colision con alguna pared
-    colision_paredes(X, Y) :-
+    % Verifica si hay colisión con alguna pared
+    colision_paredes(X, Y) :- 
         paredes(ParedesX, ParedesY),
         X >= ParedesX, X =< ParedesX + 40,  % ajusta el movimiento en x
-        Y >= ParedesY, Y =< ParedesY + 40.  % ajusta el movimienton en y 
-
-    % ajusta si mario topa con la estrella
-    colision_estrella(X, Y,Estrella) :-
+        Y >= ParedesY, Y =< ParedesY + 40.  % ajusta el movimiento en y 
     
-        style(Estrella, top, px(EstrellaY)),  % Obtiene la posicion de la estrella en Y
-        style(Estrella, left, px(EstrellaX)),  % Obtiene la posicion de la estrella en X
-        X >= EstrellaX, X =< EstrellaX + 40,  % 
-        Y >= EstrellaY, Y =< EstrellaY + 40.  % 
-
-    % Movimiento de mario
-    movimiento_mario(Mario, Axis, Incr,Estrella) :-
-        
-        style(Mario, Axis, px(X0)),  % Posicion Inicial de mario
+    % Ajusta si Mario topa con la estrella
+    colision_estrella(X, Y, Estrella) :- 
+        style(Estrella, top, px(EstrellaY)),  % Obtiene la posición de la estrella en Y
+        style(Estrella, left, px(EstrellaX)),  % Obtiene la posición de la estrella en X
+        X >= EstrellaX, X =< EstrellaX + 40,  
+        Y >= EstrellaY, Y =< EstrellaY + 40.  
+    
+    % Movimiento de Mario
+    movimiento_mario(Mario, Axis, Incr, Estrella) :- 
+        style(Mario, Axis, px(X0)),  % Posición Inicial de Mario
         X1 is X0 + Incr,
-        style(Mario, top, px(Y)),  % Obtener posicion de y de mario
-        style(Mario, left, px(X)), %  Obtener posicion de x de mari
-        (Axis = top -> (\+ colision_paredes(X, X1)) ; (\+ colision_paredes(X1, Y))),  % verifica si hay colision en paredes de mario
-
+        style(Mario, top, px(Y)),  % Obtener posición de y de Mario
+        style(Mario, left, px(X)),  % Obtener posición de x de Mario
+        (Axis = top -> (\+ colision_paredes(X, X1)) ; (\+ colision_paredes(X1, Y))),  % Verifica si hay colisión en paredes
+    
         (Axis = top ->
-        (colision_estrella(X, X1, Estrella) ->
-            mover_estrella(Axis, Incr, Estrella)
-        ;   true)   %verifica si hay colision en la estrella si el momiviento es top y si devuelve true se va a mover a la estrella
-    ;                       %es un if else, si no complue con el primer if se va a mover a la siguiente condicion
-        (colision_estrella(X1, Y, Estrella) ->
-            mover_estrella(Axis, Incr, Estrella)
-        ;   true)
-    ),
-        style(Mario, Axis, px(X1)).  % Se mueve el mario 
+            (colision_estrella(X, X1, Estrella) -> 
+                mover_estrella(Axis, Incr, Estrella) 
+            ; 
+                true)
+        ; 
+            (colision_estrella(X1, Y, Estrella) -> 
+                mover_estrella(Axis, Incr, Estrella) 
+            ; 
+                true)
+        ),
+        style(Mario, Axis, px(X1)).  % Mueve a Mario 
     
     % Movimiento en estrellas
-    mover_estrella(Axis, Incr,Estrella) :-
-        style(Estrella, Axis, px(L1)), %obtenemos la posicion de la estrella
+    colision_castillo(X, Y) :-
+    get_by_id(castillo1, Castillo),  % Obtiene el castillo por su ID
+    style(Castillo, top, px(CastilloY)),  % Obtiene la posición Y del castillo
+    style(Castillo, left, px(CastilloX)),  % Obtiene la posición X del castillo
+    X >= CastilloX, X =< CastilloX + 40,  % Verifica la colisión en X
+    Y >= CastilloY, Y =< CastilloY + 40.  % Verifica la colisión en Y
+
+    % Movimiento en estrellas
+    mover_estrella(Axis, Incr, Estrella) :- 
+        style(Estrella, Axis, px(L1)),  % Obtenemos la posición de la estrella
         Z1 is L1 + Incr,
 
-        style(Estrella, top, px(Y)),  % Posicion inicial en Y
-        style(Estrella, left, px(X)), % Posicion inicial en X
-        (Axis = top -> (\+ colision_paredes(X, Z1)) ; (\+ colision_paredes(Z1, Y))),  % Verifica si hay una estrella que va topar con alguna pared si es asi no sigue
+        style(Estrella, top, px(Y)),  % Posición inicial en Y
+        style(Estrella, left, px(X)),  % Posición inicial en X
+        (Axis = top -> (\+ colision_paredes(X, Z1)) ; (\+ colision_paredes(Z1, Y))),  % Verifica si hay colisión con paredes
+        
+        % Validación para verificar si la estrella ha llegado al castillo
+        (colision_castillo(X, Z1) ->  % Verifica la colisión con el castillo
+            % Si se cumple el if, se manda un mensaje de que ya terminó el juego
+            get_by_id(debug, Debug)
        
-        % Validacion para ver si ya topo en castillo
-        castillo(CastilloX, CastilloY),
-        (X >= CastilloX, X =< CastilloX + 40,
-         Y >= CastilloY, Y =< CastilloY + 40 ->
-            % si se cumple el if mandamos un mensaje de que ya termino el juego
-            get_by_id(debug,Debug),
-            set_html(Debug,'Juego Terminado, Felicidades'),
-            style(Estrella, Axis, px(Z1))
-        ;
-            % si no hubo colision, solo movimiento 
-            style(Estrella, Axis, px(Z1))
-        ).
+    ; 
+        % Si no hubo colisión, solo movimiento 
+        style(Estrella, Axis, px(Z1))
+    ).
 
     % anim/2
     % Cambia la animacion de mario 
@@ -148,7 +151,7 @@
   
     
     % init/0
-    % Initialize the game
+    % Inicializar el juego
     init :-
         get_by_id(mario, Mario),
         get_by_tag(body, Body),
@@ -163,380 +166,205 @@
 </script>
 
 <!-- Styles -->
-<style type="text/css">
-    #board {
-        background: rgb(225, 231, 227) url("/content/examples/resources/my-little-Mario/grass.png") center center repeat;
-        width: 500px;
-        height: 550px;
-        border: 10px solid #563101;
-        margin-left:150px;
-        margin-bottom: 60px;
-        position: relative;
-    }
 
-    #mario {
-        background: transparent url("/img/mario.png") center center no-repeat;
-        position: absolute;
-        top: 100px;
-        left: 100px;
-        width: 128px;
-        height: 128px;
-        margin-bottom: -86px;
-        z-index: 90;
-        transform: scale(0.4);
-        /* Scale down to 50% */
-    }
-
-    .poop {
-        background: transparent url("/img/mario.png") center center no-repeat;
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        margin-bottom: -20px;
-        z-index: 80;
-        transform: scale(0.7);
-        /* Scale down to 50% */
-    }
-
-    #controls {
-        position: absolute;
-        top: 30px;
-        left: 650px;
-        z-index: 99;
-    }
-
-    .control {
-        background-color: #fafafa;
-        display: inline-block;
-        color: #444444;
-        font-weight: bold;
-        font-size: 20px;
-        font-family: monospace, arial;
-        text-align: center;
-        padding: 5px 0px;
-        border-radius: 3px;
-        box-shadow: 0px 5px 0px #dfdfdf;
-        width: 40px;
-        margin-bottom: 10px;
-        opacity: 0.9;
-    }
-
-    .control.focus {
-        background-color: #eda240;
-        color: #ffffff;
-        box-shadow: 0px 5px 0px #d0831e;
-        opacity: 1;
-    }
-
-    #control-w {
-        display: block;
-        position: relative;
-        left: 45px;
-    }
-
-    #control-p {
-        display: block;
-        width: 130px;
-    }
-
-    .paredes {
-        background: transparent url("/img/bloque2.png") center center no-repeat;
-        position: absolute;
-        top: 157px;
-        left: 357px;
-        width: 128px;
-        height: 128px;
-        margin-bottom: -86px;
-        z-index: 90;
-        transform: scale(0.4);
-        /* Scale down to 50% */
-    }
-
-    .estrellas{
-        background: transparent url("/img/estrella.png") center center no-repeat;
-        position: absolute;
-        top: 157px;
-        left: 357px;
-        width: 128px;
-        height: 128px;
-        margin-bottom: -86px;
-        z-index: 89;
-        transform: scale(0.4);
-        /* Scale down to 50% */
-    }
-
-    .castillo{
-        background: transparent url("/img/castillo.png") center center no-repeat;
-        position: absolute;
-        top: 157px;
-        left: 357px;
-        width: 128px;
-        height: 128px;
-        margin-bottom: -86px;
-        z-index: 89;
-        transform: scale(0.4);
-        /* Scale down to 50% */
-    }
-
-    .bug{
-
-
-        top: 157px;
-        margin-left: 900px;
-        width: 128px;
-        height: 128px;
-        margin-bottom: -86px;
-        z-index: 90;
-       
-        /* Scale down to 50% */
-    }
-
-    #Paredes1 {
-        top: 50px;
-        left: 0px;
-    }
-
-    #Paredes2 {
-        top: 100px;
-        left: 0px;
-    }
-
-    #Paredes3 {
-        top: 0px;
-        left: 50px;
-    }
-    #Paredes4 {
-        top: 0px;
-        left: 0px;
-    }
-    #Paredes5 {
-        top: 0px;
-        left: 100px;
-    }
-    #Paredes6 {
-        top: 0px;
-        left: 150px;
-    }
-    #Paredes7 {
-        top: 0px;
-        left: 200px;
-    }
-    #Paredes8 {
-        top: 0px;
-        left: 250px;
-    }
-    #Paredes9 {
-        top: 0px;
-        left: 300px;
-    }
-    #Paredes10 {
-        top: 0px;
-        left: 350px;
-    }
-
-    #Paredes12 {
-        top: 50px;
-        left: 50px;
-    }
-    #Paredes13{
-        top: 50px;
-        left: 100px;
-    }
-    #Paredes14{
-        top: 150px;
-        left: 0px;
-    }
-    #Paredes15{
-        top: 200px;
-        left: 0px;
-    }
-    #Paredes16{
-        top: 250px;
-        left: 0px;
-    }
-    #Paredes17{
-        top: 300px;
-        left: 0px;
-    }
-    #Paredes18{
-        top: 350px;
-        left: 0px;
-    }
-    #Paredes19{
-        top: 400px;
-        left: 0px;
-    }
-    #Paredes20{
-        top: 400px;
-        left: 50px;
-    }
-    #Paredes21{
-        top: 400px;
-        left:100px;
-    }
-    #Paredes22{
-        top: 400px;
-        left:150px;
-    }
-    #Paredes23{
-        top: 400px;
-        left:200px;
-    }
-    #Paredes24{
-        top: 400px;
-        left:250px;
-    }
-    #Paredes25{
-        top: 400px;
-        left:300px;
-    }
-    #Paredes26{
-        top: 400px;
-        left:350px;
-    }
-    #Paredes27{
-        top: 400px;
-        left:400px;
-    }
-    #Paredes28{
-        top: 350px;
-        left:350px;
-    }
-    #Paredes29{
-        top: 250px;
-        left:350px;
-    }
-    #Paredes30{
-        top: 300px;
-        left:350px;
-    }
-    #Paredes31{
-        top: 250px;
-        left:300px;
-    }
-    #Paredes32{
-        top: 200px;
-        left:300px;
-    }
-    #Paredes33{
-        top: 150px;
-        left:300px;
-    }
-    #Paredes34{
-        top: 100px;
-        left:300px;
-    }
-    #Paredes35{
-        top: 50px;
-        left:300px;
-    }
-    #Paredes36{
-        top: 150px;
-        left:100px;
-    }
-    #Paredes37{
-        top: 150px;
-        left:50px;
-    }
-    #Paredes38{
-        top: 200px;
-        left:100px;
-    }
-    #Paredes39{
-        top: 250px;
-        left:100px;
-    }
-    #Paredes40{
-        top: 200px;
-        left:150px;
-    }
-
-    #estrella1{
-        top: 100px;
-        left:150px;
-    }
-    #castillo1{
-        top: 200px;
-        left:50px;
-    }
-
-    #bug{
-        left:100px
-    }
-
-</style>
 
 <!-- Board -->
-<div id="board">
-    <div id="mario"></div>
-    <div id="controls">
-        <div class="control" id="control-w">w</div>
-        <div class="control" id="control-a">a</div>
-        <div class="control" id="control-s">s</div>
-        <div class="control" id="control-d">d</div>
-        <div class="control" id="control-p">p (poop)</div>
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mario Bros y Prolog</title>
+    <script src="../tauprolog.js"></script>
+    <link rel="stylesheet" href="styles.css">
+
+
+    <script type="module">
+        // Crear sesión de Prolog
+        import { InicioMario, InicioEstrella, PosicionCastillo, Tablero10x8 } from './variables.js';
+        var session = pl.create();
+
+        // Consultar el programa Prolog
+        session.consult("Mario.pl");
+
+        // Consulta inicial para iniciar Mario
+        session.query("init.");
+        session.answer(console.log);
+
+        function BusquedaXAnchura(Tablero, InicioMario, InicioEstrella, PosicionCastillo) {
+            const filas = Tablero.length;
+            const columnas = Tablero[0].length;
+
+            const direcciones = [
+                [-1, 0, 'arriba'], // Arriba
+                [1, 0, 'abajo'],   // Abajo
+                [0, -1, 'izquierda'], // Izquierda
+                [0, 1, 'derecha'] // Derecha
+            ];
+
+            const cola = [[InicioMario, InicioEstrella, []]]; // [posición de Mario, posición de la estrella, ruta]
+            const visitado = new Set(); // Para evitar ciclos
+            visitado.add(`${InicioMario[0]},${InicioMario[1]},${InicioEstrella[0]},${InicioEstrella[1]}`);
+
+            let MejorCamino = null;
+
+            while (cola.length > 0) {
+                const [marioPos, PosInicial, path] = cola.shift();
+                const [mx, my] = marioPos;
+                const [sx, sy] = PosInicial;
+
+                // Si Mario tiene la estrella y ha llegado al castillo
+                if (sx === PosicionCastillo[0] && sy === PosicionCastillo[1]) {
+                    // Verifica si el camino actual es el mejor
+                    if (MejorCamino === null || path.length < MejorCamino.length) {
+                        MejorCamino = [...path]; // Guarda el mejor camino
+                    }
+                    continue; // No necesitamos seguir explorando desde esta posición
+                }
+
+                // Intenta mover a Mario en cada dirección
+                for (const [dx, dy, direccion] of direcciones) {
+                    const NuevoMarioX = mx + dx;
+                    const NuevoMarioY = my + dy;
+
+                    // Verifica que la nueva posición de Mario sea válida
+                    if (
+                        NuevoMarioX >= 0 && NuevoMarioX < filas && NuevoMarioY >= 0 && NuevoMarioY < columnas &&
+                        Tablero[NuevoMarioX][NuevoMarioY] !== 2 // Verifica que no haya un obstáculo
+                    ) {
+                        let NuevaPosInicial = PosInicial;
+
+                        // Si Mario se mueve a la estrella, mueve la estrella
+                        if (NuevoMarioX === sx && NuevoMarioY === sy) {
+                            const NuevaEstrellaX = sx + dx;
+                            const NuevaEstrellaY = sy + dy;
+
+                            // Verifica que la nueva posición de la estrella sea válida
+                            if (
+                                NuevaEstrellaX >= 0 && NuevaEstrellaX < filas && NuevaEstrellaY >= 0 && NuevaEstrellaY < columnas &&
+                                Tablero[NuevaEstrellaX][NuevaEstrellaY] !== 2 // Verifica que no haya un obstáculo
+                            ) {
+                                NuevaPosInicial = [NuevaEstrellaX, NuevaEstrellaY]; // Actualiza la posición de la estrella
+                            } else {
+                                continue; // Si no puede mover la estrella, no continuar este movimiento
+                            }
+                        }
+
+                        const NuevoEstado = `${NuevoMarioX},${NuevoMarioY},${NuevaPosInicial[0]},${NuevaPosInicial[1]}`;
+                        if (!visitado.has(NuevoEstado)) {
+                            visitado.add(NuevoEstado);
+                            cola.push([[NuevoMarioX, NuevoMarioY], NuevaPosInicial, [...path, direccion]]); // Agrega a la cola       
+
+                            // console.log(`Mario se mueve hacia: ${direction}`); 
+                        }
+                    }
+                }
+            }
+
+
+            if (MejorCamino) {
+                moverPorCamino(MejorCamino);
+            } else {
+                console.log("No hay camino para llevar la estrella al castillo.");
+                //setearle al id bug otro texto
+                document.getElementById("bug").innerText = "No hay camino para llevar la estrella al castillo.";
+            }
+        }
+
+        // Función para mover a Mario por el camino
+        async function moverPorCamino(camino) {
+            for (const movimiento of camino) {
+                await mover(movimiento); // Esperar a que cada movimiento se complete
+                console.log(`Mario se mueve hacia: ${movimiento}`);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Esperar 5 segundos
+                //verificar si es el ultimo movimiento
+                
+            }
+            document.getElementById("bug").innerText = "JUEGO TERMINADO"; // Borrar el texto del id bug
+        }
+
+        function mover(direccion) {
+            return fetch(`http://localhost:3000/moverMario/${direccion}`)
+                .then(response => response.text())
+                .then(data => console.log(data));
+        }
+
+
+
+        function IniciarMovimientoMario() {
+            BusquedaXAnchura(Tablero10x8, InicioMario, InicioEstrella, PosicionCastillo);
+        }
+        document.getElementById('InicioMovimiento').addEventListener('click', IniciarMovimientoMario);
+    </script>
+</head>
+
+<body>
+    <h1 class="titulo">Mario Bros con integración Prolog</h1>
+    <button class="btn" id="InicioMovimiento">
+        Resolver con IA
+      </button>
+      
+    <div id="board">
+        <div id="mario"></div>
+        <div id="controls">
+            <div class="control" id="control-w">w</div>
+            <div class="control" id="control-a">a</div>
+            <div class="control" id="control-s">s</div>
+            <div class="control" id="control-d">d</div>
+            <div class="control" id="control-p">Botones</div>
+
+        </div>
+        <!-- Paredeses -->
+        <div class="paredes" id="Paredes1"></div>
+        <div class="paredes" id="Paredes2"></div>
+        <div class="paredes" id="Paredes3"></div>
+        <div class="paredes" id="Paredes4"></div>
+        <div class="paredes" id="Paredes5"></div>
+        <div class="paredes" id="Paredes6"></div>
+        <div class="paredes" id="Paredes7"></div>
+        <div class="paredes" id="Paredes8"></div>
+        <div class="paredes" id="Paredes9"></div>
+
+
+        <div class="paredes" id="Paredes12"></div>
+        <div class="paredes" id="Paredes13"></div>
+        <div class="paredes" id="Paredes14"></div>
+        <div class="paredes" id="Paredes15"></div>
+        <div class="paredes" id="Paredes16"></div>
+        <div class="paredes" id="Paredes17"></div>
+        <div class="paredes" id="Paredes18"></div>
+        <div class="paredes" id="Paredes19"></div>
+        <div class="paredes" id="Paredes20"></div>
+        <div class="paredes" id="Paredes21"></div>
+        <div class="paredes" id="Paredes22"></div>
+        <div class="paredes" id="Paredes23"></div>
+        <div class="paredes" id="Paredes24"></div>
+        <div class="paredes" id="Paredes25"></div>
+        <div class="paredes" id="Paredes26"></div>
+        <div class="paredes" id="Paredes28"></div>
+        <div class="paredes" id="Paredes29"></div>
+        <div class="paredes" id="Paredes30"></div>
+        <div class="paredes" id="Paredes31"></div>
+        <div class="paredes" id="Paredes32"></div>
+        <div class="paredes" id="Paredes33"></div>
+        <div class="paredes" id="Paredes34"></div>
+        <div class="paredes" id="Paredes35"></div>
+        <div class="paredes" id="Paredes36"></div>
+        <div class="paredes" id="Paredes37"></div>
+        <div class="paredes" id="Paredes38"></div>
+        <div class="paredes" id="Paredes39"></div>
+        <div class="paredes" id="Paredes40"></div>
+        <div class="bug" id="bug">
+            <h1 id="debug">Juego en proceso!</h1>
+        </div>
+        <div class="estrellas" id="estrella1"></div>
+        <div class="castillo" id="castillo1"></div>
     </div>
-    <!-- Paredeses -->
-    <div class="paredes" id="Paredes1"></div>
-    <div class="paredes" id="Paredes2"></div>
-    <div class="paredes" id="Paredes3"></div>
-    <div class="paredes" id="Paredes4"></div>
-    <div class="paredes" id="Paredes5"></div>
-    <div class="paredes" id="Paredes6"></div>
-    <div class="paredes" id="Paredes7"></div>
-    <div class="paredes" id="Paredes8"></div>
-    <div class="paredes" id="Paredes9"></div>
 
+</body>
 
-    <div class="paredes" id="Paredes12"></div>
-    <div class="paredes" id="Paredes13"></div>
-    <div class="paredes" id="Paredes14"></div>
-    <div class="paredes" id="Paredes15"></div>
-    <div class="paredes" id="Paredes16"></div>
-    <div class="paredes" id="Paredes17"></div>
-    <div class="paredes" id="Paredes18"></div>
-    <div class="paredes" id="Paredes19"></div>
-    <div class="paredes" id="Paredes20"></div>
-    <div class="paredes" id="Paredes21"></div>
-    <div class="paredes" id="Paredes22"></div>
-    <div class="paredes" id="Paredes23"></div>
-    <div class="paredes" id="Paredes24"></div>
-    <div class="paredes" id="Paredes25"></div>
-    <div class="paredes" id="Paredes26"></div>
-
-    <div class="paredes" id="Paredes28"></div>
-    <div class="paredes" id="Paredes29"></div>
-    <div class="paredes" id="Paredes30"></div>
-    <div class="paredes" id="Paredes31"></div>
-    <div class="paredes" id="Paredes32"></div>
-    <div class="paredes" id="Paredes33"></div>
-    <div class="paredes" id="Paredes34"></div>
-    <div class="paredes" id="Paredes35"></div>
-    <div class="paredes" id="Paredes36"></div>
-    <div class="paredes" id="Paredes37"></div>
-    <div class="paredes" id="Paredes38"></div>
-    <div class="paredes" id="Paredes39"></div>
-    <div class="paredes" id="Paredes40"></div>
-
-    <div class="bug" id="bug">         <h1 id="debug">Juego en proceso!</h1>          </div>
-
-
-
-    <!-- Estrealla -->
-    <div class="estrellas" id="estrella1"></div>
-
-
-    <div class="castillo" id="castillo1"></div>
-</div>
-
-
-<script type="text/javascript">
-    // Create session
-    var session = pl.create(1000);
-    // Consult program
-    session.consult("Mario.pl");
-    // Query goal
-    session.query("init.");
-    // Find answers
-    session.answer(console.log);
-</script>
+</html>

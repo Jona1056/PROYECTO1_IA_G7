@@ -102,6 +102,7 @@
         (colision_castillo(X, Z1) ->  % Verifica la colisión con el castillo
             % Si se cumple el if, se manda un mensaje de que ya terminó el juego
             get_by_id(debug, Debug),
+            set_html(Debug,"FIN"),
             style(Estrella, Axis, px(Z1))
        
     ; 
